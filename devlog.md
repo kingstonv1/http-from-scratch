@@ -166,3 +166,37 @@ My most intuitive implementation that follows these requirements and considerati
 - Based on the path (and perhaps `content-type`) provided in the request, the server will fetch the desired resource and parse it into an `http_response` object, which encapsulates the data to be sent and determines which headers will be sent in the response.
 - The response object will be compared against the request headers to determine if the response complies with the specifics of the client's request. If the resource is incorrect, stop processing during the first error and return the proper status code.
 - Finally, if the request processing has not been interrupted at this point, the resource should be what was requested. Send the resource to the client.
+
+
+----
+
+##### 02/25/25 Update 1: Request line parsing & http_request objects!
+
+```
+Listening for incoming connections...
+Recieved a request of length 73
+GET / HTTP/1.1
+Host: localhost
+User-Agent: curl/7.88.1
+Accept: */*
+
+
+Incoming HTTP Request.
+GET / HTTP/1.1
+```
+
+My server can parse out the very first line of a GET request!! Yippee!!!
+There's been a lot of time that's gone by since planning for the basic GET server, though - so why did a simple parser take so long? Perfectionism. Which might be a good thing here, even if it makes things a bit slow.
+
+To begin, I finally decided that I was going to do fully-fledged headers for my classes, which were a bit tricky to get the grasp of. No other language that I've used really has this setup - forward declarations in a header and actual definitions in a code file. So it took a decent amount of shuffling around between http_request.h and http_request.cpp to figure out where and how I should define each thing. But I'm fairly sure what I have now is serviceable and won't cause me too much headache in the future.
+
+Here were the decisions I made that took some deliberation, and why I wound up going with what I went with:
+- **Enum for HTTP Verbs**: The type I used for encapsulating the HTTP Verb used in the request is an enum. This made sense to me because a proper request can only take one of a handful of methods, and storing them in something too malleable like a string feels like an issue waiting to happen. My only concern with this is that I have no way to enforce that the enum parsing happens in *only* http_request.parse_request(). I also parse the enum out into a string in the http_request.get_method() getter - I can see myself maybe wanting to parse it out in a similar way elsewhere? So long as that getter stays the only place where I parse out that enum value, I'll keep it an enum, but if I have to write too many switch statements I'll consider refactoring it out.
+- **Simple Parsing for the HTTP request line**: To parse out the request line at the beginning of an HTTP message, I just used a simple for loop and an incrementor at spaces. I considered making something more fault-tolerable - as it stands, duplicate spaces in your request are fine, but a lack of spaces or too many trailing spaces might explode my parser. But at some point you do have to put the fault on the user - after all, dealing with people tinkering with their web request / sending slightly bad requests isn't really a heavy consideration for 99% of users. So long as the algorithm can consistently parse out what it needs to from a *good* request, I'm not stressing.
+- **Deferring error handling**: I'm not handling any kind of parsing errors/malformed request errors in the http_request object. I'm just parsing the request the best I possibly can and then handing that over to a response generator object of some sort later. The way that object will be able to tell that something went wrong during parsing is that field will be set to a strong, sensible default at initialization. The strings start empty, the buffer pointer starts as a nullptr, and the http verb starts as an `http_verb::BAD`. This certainly feels like it will work for now, but I am a bit worried that there's no actual mechanism enforcing this practice. If the class grows too big, it might be helpful to have some sort of more explicit way to signal a parsing problem for any individual field. But perhaps I'm thinking too hard about this - I'm going to leave it as it is until it becomes a problem.
+
+All of that being said, the object's current functionality works well. I haven't had my server crash (yet!), though I haven't exploded it with bad HTTP requests yet. I also haven't built anything on top of it. I think the way I've built it out is sensible, but I don't doubt there will be issues later.
+
+All I should have left to do in the http_request object is a header parser - which seems simpler than the request line parser! Later on, I will need to handle request content, especially for POSTs, but I can figure that out after the GET functionality is done.
+
+Bye bye ^-^
