@@ -83,7 +83,7 @@ http_request::http_request(const char* buf) {
     parse_headers();
 }
 
-std::string http_request::get_method() { 
+std::string http_request::get_method() const { 
     switch (this->http_method) {
         case (0):
             return "GET";
@@ -98,7 +98,7 @@ std::string http_request::get_method() {
     return "UNDEF";
 }
 
-std::string http_request::get_path() { return resource_path; }
-std::string http_request::get_version() { return http_version; }
-std::string http_request::get_reqstr() { return request_string; }
-std::map<std::string, std::string> http_request::get_headers() { return headers; }
+std::string http_request::get_path() const { return resource_path; }
+std::string http_request::get_version() const { return http_version; }
+std::string http_request::get_reqstr() const { return request_string; }
+std::map<std::string, std::string> http_request::get_headers() const { return headers; }

@@ -27,9 +27,9 @@ class http_request {
 
     public:
         http_request(const char*);
-        std::string get_method();
-        std::string get_path();
-        std::string get_version();
-        std::string get_reqstr();
-        std::map<std::string, std::string> get_headers();
+        std::string get_method() const;
+        std::string get_path() const;
+        std::string get_version() const;
+        std::string get_reqstr() const;
+        std::map<std::string, std::string> get_headers() const;
 };
