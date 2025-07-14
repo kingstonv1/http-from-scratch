@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wpedantic -Werror -std=c++17
+CXXFLAGS = -Wall -Wpedantic -Werror -std=c++20
 
 SRC = main.cpp http_request.cpp http_response.cpp
 OBJ = $(SRC:.cpp=.o)
