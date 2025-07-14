@@ -1,8 +1,11 @@
-#pragma once
+#ifndef HTTPSERVER_HTTP_REQUEST
+#define HTTPSERVER_HTTP_REQUEST
 
 #include <map>
 #include <string>
 #include <vector>
+
+#endif
 
 class http_request {
     private:

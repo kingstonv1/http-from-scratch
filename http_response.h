@@ -1,10 +1,14 @@
-#pragma once
+#ifndef HTTPSERVER_HTTP_RESPONSE
+
+#define HTTPSERVER_HTTP_RESPONSE
 
 #include <string>
 #include <map>
 #include <filesystem>
 
 #include "http_request.h"
+
+#endif
 
 class http_response {
     private:
