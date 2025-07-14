@@ -1,14 +1,9 @@
-#include "http_request.h"
-#include "http_response.h"
+#include "HTTPRequest.h"
+#include "HTTPResponse.h"
 
 #include <iostream>
-
-
 #include <string>
 #include <map>
-
-
-
 #include <fstream>
 
 #include <sys/socket.h>
@@ -19,18 +14,12 @@
 #include <string.h>
 #include <signal.h>
 
-bool debug = true;
-
 namespace fhandler {
 	int server;
 	int client;
 }
 
-namespace server_log {
-	int empty_requests = 0;
-}
-
-void handle_error(std::string msg) {
+[[noreturn]] void handle_error(const std::string& msg) {
 	perror(msg.c_str());
 	std::cout << "errno " << errno << std::endl;
 	exit(EXIT_FAILURE);
@@ -41,7 +30,6 @@ void update_log() {
 
 	if (logfile.is_open()) {
 		logfile << "--------------------------" << '\n';
-		logfile << "Blank requests recieved: " << server_log::empty_requests << '\n';
 	} else {
 		std::cerr << "Unable to open logfile";
 	}
@@ -59,13 +47,15 @@ void cleanup(void) {
 		if (close_msg == -1) { handle_error("Error closing the client file handler."); }
 	}
 
-	if (debug) { update_log(); }
+	update_log();
 }
 
 int main() {
 	// Intercept the program exit to clean up so we don't 
 	// leave sockets open after we're done.
 	std::atexit(cleanup);
+
+	update_log();
 
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
@@ -100,10 +90,7 @@ int main() {
 
 		// We recieved no message. Don't print anything.
 		// Maybe a bad check depending on the type of data sent ? Look into this
-		if (buf[0] == '\0') { 
-			server_log::empty_requests++;	
-			continue; 
-		}
+		if (buf[0] == '\0') { continue; }
 
 		std::cout << "Recieved a request of length " << msg_size / sizeof(char) << std::endl;
 		// Add a null at the end of our http method so we don't print unset memory.
@@ -113,8 +100,8 @@ int main() {
 
 		std::cout << buf << std::endl;
 
-		http_request current_request = http_request(buf);
-		http_response res = http_response(&current_request);
+		HTTPRequest current_request = HTTPRequest(buf);
+		HTTPResponse res = HTTPResponse(&current_request);
 		const char* arr = res.get_response();
 		std::string response(res.get_response());
 

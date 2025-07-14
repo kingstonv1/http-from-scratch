@@ -1,11 +1,11 @@
-#include "http_request.h"
+#include "HTTPRequest.h"
 
 #include <map>
 #include <string>
 #include <sstream>
 #include <vector>
 
-void http_request::parse_request() {
+void HTTPRequest::parse_request() {
     std::string rs = this->buffer_string;
 
     std::string verb;
@@ -46,7 +46,7 @@ void http_request::parse_request() {
     this->http_version = version;
 }
 
-void http_request::parse_headers() {
+void HTTPRequest::parse_headers() {
     std::istringstream stream(this->buffer_string);
     std::string ln;
 
@@ -76,14 +76,14 @@ void http_request::parse_headers() {
     }
 }
 
-http_request::http_request(const char* buf) {
+HTTPRequest::HTTPRequest(const char* buf) {
     this->request_buffer = buf;
     this->buffer_string = std::string(buf);
     parse_request();
     parse_headers();
 }
 
-std::string http_request::get_method() const { 
+std::string HTTPRequest::get_method() const { 
     switch (this->http_method) {
         case (0):
             return "GET";
@@ -98,7 +98,7 @@ std::string http_request::get_method() const {
     return "UNDEF";
 }
 
-std::string http_request::get_path() const { return resource_path; }
-std::string http_request::get_version() const { return http_version; }
-std::string http_request::get_reqstr() const { return request_string; }
-std::map<std::string, std::string> http_request::get_headers() const { return headers; }
+std::string HTTPRequest::get_path() const { return resource_path; }
+std::string HTTPRequest::get_version() const { return http_version; }
+std::string HTTPRequest::get_reqstr() const { return request_string; }
+std::map<std::string, std::string> HTTPRequest::get_headers() const { return headers; }

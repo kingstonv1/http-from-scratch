@@ -1,12 +1,12 @@
-#ifndef HTTPSERVER_HTTP_REQUEST
-#define HTTPSERVER_HTTP_REQUEST
+#ifndef HTTPSERVER_HTTPRequest
+#define HTTPSERVER_HTTPRequest
 
 #include <map>
 #include <string>
 #include <vector>
 
 
-class http_request {
+class HTTPRequest {
     private:
         enum http_verb {
             GET,
@@ -28,7 +28,7 @@ class http_request {
         void parse_headers();
 
     public:
-        http_request(const char*);
+        HTTPRequest(const char*);
         std::string get_method() const;
         std::string get_path() const;
         std::string get_version() const;

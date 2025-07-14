@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wpedantic -Werror -std=c++20
 
-SRC = main.cpp http_request.cpp http_response.cpp
+SRC = main.cpp HTTPRequest.cpp HTTPResponse.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = server
 

@@ -1,5 +1,5 @@
-#include "http_response.h"
-#include "http_request.h"
+#include "HTTPResponse.h"
+#include "HTTPRequest.h"
 
 #include <string>
 #include <sstream>
@@ -13,7 +13,7 @@
 #include <ctime>
 #include <cstring>
 
-std::map<std::string, std::string> http_response::default_headers() {
+std::map<std::string, std::string> HTTPResponse::default_headers() {
     std::time_t now = std::time(nullptr);
     std::tm gmt_time = *std::gmtime(&now);
 
@@ -29,7 +29,7 @@ std::map<std::string, std::string> http_response::default_headers() {
     return d;
 }
 
-bool http_response::parse_get() { 
+bool HTTPResponse::parse_get() { 
     std::ifstream served_file(request_path);
 
     if (!served_file.is_open()) {
@@ -52,19 +52,19 @@ bool http_response::parse_get() {
     return true;
 }
 
-bool http_response::parse_post() { 
+bool HTTPResponse::parse_post() { 
     return true;
 }
 
-bool http_response::parse_head() { 
+bool HTTPResponse::parse_head() { 
     return true;
 }
 
-bool http_response::validate_response() {
+bool HTTPResponse::validate_response() {
     return true;
 }
 
-std::string http_response::message_from_code(int code) {
+std::string HTTPResponse::message_from_code(int code) {
     switch (code) {
         case (200):
             return "OK";
@@ -99,7 +99,7 @@ std::string http_response::message_from_code(int code) {
 }
 
 // precondition: set_response_params() should have been called already.
-void http_response::compose_response() {
+void HTTPResponse::compose_response() {
     if (complete) { return; }
 
     response_message = "HTTP/1.1";
@@ -117,20 +117,20 @@ void http_response::compose_response() {
     complete = true;
 }
 
-void http_response::finish_fill_buffer() {
+void HTTPResponse::finish_fill_buffer() {
     assert(response_message.size() < 2048 && "Message size too long, split up");
     assert(response_message.size() > 0 && "Need to send some kind of response.");
     strcpy(response_content, response_message.c_str());
 }
 
-void http_response::set_response_params(int code, std::string msg) {
+void HTTPResponse::set_response_params(int code, std::string msg) {
     this->response_code = code;
     this->response_details = msg;
     this->response_message = message_from_code(code);
 }
 
 // weirdly placed method but....
-bool http_response::contains_disallowed_chars(std::string s) {
+bool HTTPResponse::contains_disallowed_chars(std::string s) {
     std::vector<char> disallowed {'\0', '%', '#', '\\', ':', '*', '<', '>', '|', '"'};
     return std::any_of(
         disallowed.begin(),
@@ -138,7 +138,7 @@ bool http_response::contains_disallowed_chars(std::string s) {
         [&](char c){ return s.find(c) != std::string::npos; });
 }
 
-bool http_response::validate_path() {
+bool HTTPResponse::validate_path() {
     if (request.get_path().size() > 255) {
         set_response_params(400, "Requested path too long.");
         return false;
@@ -182,13 +182,13 @@ bool http_response::validate_path() {
     return true;
 }
 
-const char* http_response::get_response() { return this->response_content; }
-int http_response::get_code() { return this->response_code; }
-std::string http_response::get_message() { return this->response_message; }
-std::string http_response::get_details() { return this->response_details; }
-std::map<std::string, std::string> http_response::get_headers() { return this->headers; }
+const char* HTTPResponse::get_response() { return this->response_content; }
+int HTTPResponse::get_code() { return this->response_code; }
+std::string HTTPResponse::get_message() { return this->response_message; }
+std::string HTTPResponse::get_details() { return this->response_details; }
+std::map<std::string, std::string> HTTPResponse::get_headers() { return this->headers; }
 
-http_response::http_response(const http_request* req) : request(*req) {
+HTTPResponse::HTTPResponse(const HTTPRequest* req) : request(*req) {
     // default to empty response body. Replaced during succesful requests.
     response_content[0] = '\0'; 
     headers = default_headers();

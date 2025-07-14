@@ -1,18 +1,18 @@
-#ifndef HTTPSERVER_HTTP_RESPONSE
+#ifndef HTTPSERVER_HTTPResponse
 
-#define HTTPSERVER_HTTP_RESPONSE
+#define HTTPSERVER_HTTPResponse
 
 #include <string>
 #include <map>
 #include <filesystem>
 
-#include "http_request.h"
+#include "HTTPRequest.h"
 
 
-class http_response {
+class HTTPResponse {
     private:
         char response_content[2048];
-        const http_request& request = nullptr;
+        const HTTPRequest& request = nullptr;
         int response_code = -1;
         std::string response_message;
         std::string response_details; //a string for debugging describing any issues 
@@ -36,7 +36,7 @@ class http_response {
         std::map<std::string, std::string> default_headers();
 
     public:
-        http_response(const http_request*);
+        HTTPResponse(const HTTPRequest*);
         const char *get_response();
         int get_code();
         std::string get_message();
