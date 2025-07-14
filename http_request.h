@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#endif
 
 class http_request {
     private:
@@ -36,3 +35,5 @@ class http_request {
         std::string get_reqstr() const;
         std::map<std::string, std::string> get_headers() const;
 };
+
+#endif

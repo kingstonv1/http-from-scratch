@@ -8,7 +8,6 @@
 
 #include "http_request.h"
 
-#endif
 
 class http_response {
     private:
@@ -44,3 +43,5 @@ class http_response {
         std::string get_details();
         std::map<std::string, std::string> get_headers();
 };
+
+#endif
