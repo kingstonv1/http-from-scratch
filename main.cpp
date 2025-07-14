@@ -1,4 +1,14 @@
+#include "http_request.h"
+#include "http_response.h"
+
 #include <iostream>
+
+
+#include <string>
+#include <map>
+
+
+
 #include <fstream>
 
 #include <sys/socket.h>
@@ -59,7 +69,7 @@ int main() {
 
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(80); // HTTP is typically hosted on port 80.
+	addr.sin_port = htons(4459); // HTTP is typically hosted on port 80.
 	addr.sin_addr.s_addr = INADDR_ANY;
 
 	fhandler::server = socket(AF_INET, SOCK_STREAM, 0);
@@ -77,10 +87,10 @@ int main() {
 	if (list_res == -1) { handle_error("Error listening for connections."); }
 	std::cout << "Listening for incoming connections..." << std::endl;
 
-	fhandler::client = accept(fhandler::server, nullptr, nullptr);
-	if (fhandler::client == -1) { handle_error("Error accepting an incoming connection."); }
-
 	while (true) {
+		fhandler::client = accept(fhandler::server, nullptr, nullptr);
+		if (fhandler::client == -1) { handle_error("Error accepting an incoming connection."); }
+
 		char buf[1024];
 		// Clear the buffer before we receive a message to prevent past requests being re-server_logged
 		// if the client sends a message of length 0.
@@ -103,7 +113,15 @@ int main() {
 
 		std::cout << buf << std::endl;
 
-		send(fhandler::client, buf, sizeof(buf), 0);
+		http_request current_request = http_request(buf);
+		http_response res = http_response(&current_request);
+		const char* arr = res.get_response();
+		std::string response(res.get_response());
+
+		std::cout << "Here's what's being sent: " << arr << std::endl;
+		
+		send(fhandler::client, arr, strlen(arr), 0);
+		std::cout << "Sent" << std::endl;
 	}
 
 	close(fhandler::client);
